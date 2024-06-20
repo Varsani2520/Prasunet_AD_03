@@ -10,14 +10,12 @@ const Stopwatch = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [laps, setLaps] = useState([]);
-  const progress = useRef(new Animated.Value(0)).current;
-  const intervalRef = useRef(null);
 
   useEffect(() => {
-    let interval;
+    let interval: NodeJS.Timeout | undefined;
     if (isRunning) {
       interval = setInterval(() => {
-        setElapsedTime(prevTime => prevTime + 1000);
+        setElapsedTime(prevTime => prevTime + 100);
       }, 1);
     } else if (!isRunning && elapsedTime !== 0) {
       clearInterval(interval);
@@ -25,11 +23,15 @@ const Stopwatch = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, elapsedTime]);
+  }, [isRunning]);
+
+
 
   const startStopwatch = () => {
-    setIsRunning(!isRunning);
-  };
+    if (isRunning) {
+      setLaps([...laps, elapsedTime]);
+    }
+    setIsRunning(!isRunning);  };
 
   const resetStopwatch = () => {
     setIsRunning(false);
@@ -41,7 +43,7 @@ const Stopwatch = () => {
     setLaps(prevLaps => [elapsedTime, ...prevLaps]);
   };
 
-  const formatTime = (time) => {
+  const formatTime = (time:number) => {
     const minutes = Math.floor(time / (1000 * 60));
     const seconds = Math.floor((time % (1000 * 60)) / 1000);
     const milliseconds = `00${time % 1000}`.slice(-3);
@@ -51,21 +53,16 @@ const Stopwatch = () => {
     return `${formattedMinutes}:${formattedSeconds}:${milliseconds}`;
   };
 
-  const circumference = 2 * Math.PI * 90;
-  const strokeDashoffset = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [circumference, 0],
-  });
-
+ const progress = (elapsedTime / 1000) % 60;
+ const circumference = 2 * Math.PI * 140;
+ const strokeDashoffset = circumference - (progress / 60) * circumference;
   return (
-    <LinearGradient
-      colors={['#4f5ee8', '#4f5ee8', '#dddff4']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.gradientBackground}
-    >
+   
       <View style={styles.container}>
-        <Text style={styles.title}>Stopwatch</Text>
+        <View style={styles.titleContainer}>
+        
+          <Text style={styles.title}>Stopwatch</Text>
+        </View>
         <View style={styles.timerContainer}>
           <Svg height="200" width="200" viewBox="0 0 200 200">
             <Circle
@@ -85,7 +82,7 @@ const Stopwatch = () => {
               fill="none"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
+                            strokeLinecap="round"
             />
           </Svg>
           <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
@@ -113,16 +110,11 @@ const Stopwatch = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  gradientBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  
   container: {
     flex: 1,
     justifyContent: 'space-between',
@@ -131,11 +123,19 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     width: '100%',
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20,
+    marginLeft: 10,
+  },
+  icon: {
+    marginLeft: 20,
   },
   timerContainer: {
     justifyContent: 'center',
