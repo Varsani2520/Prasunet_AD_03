@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Animated, FlatList } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const Stopwatch = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [laps, setLaps] = useState([]);
   const intervalRef = useRef(null);
   const progress = useRef(new Animated.Value(0)).current;
 
@@ -44,6 +46,11 @@ const Stopwatch = () => {
       duration: 0,
       useNativeDriver: false,
     }).start();
+    setLaps([]);
+  };
+
+  const addLap = () => {
+    setLaps((prevLaps) => [elapsedTime, ...prevLaps]);
   };
 
   const formatTime = (time) => {
@@ -91,13 +98,25 @@ const Stopwatch = () => {
         <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
       </View>
       <View style={styles.buttonsContainer}>
+       
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#4f5ee8' }]} onPress={addLap}>
+          <Text style={styles.buttonText}>Lap</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#FF6347' : '#4f5ee8' }]} onPress={startStopwatch}>
-          <Text style={styles.buttonText}>{isRunning ? 'Pause' : 'Start'}</Text>
+          <Icon name={isRunning ? 'pause' : 'play'} size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, { backgroundColor: '#FFD700' }]} onPress={resetStopwatch}>
-          <Text style={styles.buttonText}>Reset</Text>
+          <Icon name="refresh" size={30} color="#fff" />
         </TouchableOpacity>
+       
       </View>
+      <FlatList
+        data={laps}
+        renderItem={({ item, index }) => (
+          <Text key={index} style={styles.lapText}>{`Lap ${index + 1}: ${formatTime(item)}`}</Text>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </View>
   );
 };
@@ -134,6 +153,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
+  },
+  lapText: {
+    fontSize: 18,
+    color: '#000',
+    marginTop: 10,
   },
 });
 
