@@ -1,10 +1,27 @@
-import React, { useState, useRef } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const Stopwatch = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const intervalRef = useRef(null);
+  const progress = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isRunning) {
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 60000, // 1 minute duration for the progress bar to fill
+        useNativeDriver: false,
+      }).start();
+    } else {
+      progress.stopAnimation();
+    }
+    return () => progress.stopAnimation();
+  }, [isRunning]);
 
   const startStopwatch = () => {
     if (isRunning) {
@@ -22,6 +39,11 @@ const Stopwatch = () => {
     clearInterval(intervalRef.current);
     setElapsedTime(0);
     setIsRunning(false);
+    Animated.timing(progress, {
+      toValue: 0,
+      duration: 0,
+      useNativeDriver: false,
+    }).start();
   };
 
   const formatTime = (time) => {
@@ -36,11 +58,40 @@ const Stopwatch = () => {
     return `${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`;
   };
 
+  const circumference = 2 * Math.PI * 90;
+  const strokeDashoffset = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [circumference, 0],
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
+      <View style={styles.timerContainer}>
+        <Svg height="200" width="200" viewBox="0 0 200 200">
+          <Circle
+            cx="100"
+            cy="100"
+            r="90"
+            stroke="#dddff4"
+            strokeWidth="10"
+            fill="none"
+          />
+          <AnimatedCircle
+            cx="100"
+            cy="100"
+            r="90"
+            stroke="#4f5ee8"
+            strokeWidth="10"
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+          />
+        </Svg>
+        <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
+      </View>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#FF6347' : '#32CD32' }]} onPress={startStopwatch}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#FF6347' : '#4f5ee8' }]} onPress={startStopwatch}>
           <Text style={styles.buttonText}>{isRunning ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, { backgroundColor: '#FFD700' }]} onPress={resetStopwatch}>
@@ -58,9 +109,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  timer: {
-    fontSize: 48,
+  timerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  timer: {
+    position: 'absolute',
+    fontSize: 32,
+    fontWeight: 'bold',
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -71,7 +128,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginHorizontal: 10,
-    borderRadius: 5,
+    borderRadius: 25, // make the button rounded
   },
   buttonText: {
     fontSize: 18,
