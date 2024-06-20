@@ -99,16 +99,18 @@ const Stopwatch = () => {
       </View>
       <View style={styles.buttonsContainer}>
        
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#4f5ee8' }]} onPress={addLap}>
-          <Text style={styles.buttonText}>Lap</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#FF6347' : '#4f5ee8' }]} onPress={startStopwatch}>
-          <Icon name={isRunning ? 'pause' : 'play'} size={30} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#FFD700' }]} onPress={resetStopwatch}>
-          <Icon name="refresh" size={30} color="#fff" />
+       
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#dddff4' }]} onPress={addLap}>
+        <Icon name="flag" size={30} color="#4f5ee8" />
+
         </TouchableOpacity>
        
+        <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#dddff4' : '#dddff4' }]} onPress={startStopwatch}>
+          <Icon name={isRunning ? 'pause' : 'play'} size={30} color="#4f5ee8" />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#dddff4' }]} onPress={resetStopwatch}>
+          <Icon name="refresh" size={30} color="#4f5ee8" />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={laps}
