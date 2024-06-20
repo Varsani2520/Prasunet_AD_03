@@ -1,50 +1,84 @@
-# Welcome to your Expo app 👋
+# Prasunet_AD_03 | StopWatch_APP
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple Stopwatch application built with React Native, allowing users to measure elapsed time, record laps, and manage their stopwatch efficiently.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Start and Stop Stopwatch**: Start and stop the stopwatch to measure elapsed time.
+- **Record Laps**: Record laps to track split times.
+- **Reset Stopwatch**: Reset the stopwatch to zero.
+- **Visual Progress**: Visual representation of elapsed time using an animated circle.
+- **Responsive Design**: Designed to work seamlessly on different screen sizes.
 
-   ```bash
-   npm install
-   ```
+## Technologies Used
 
-2. Start the app
+- **React Native**: Framework for building native apps using React.
+- **React Hooks**: Functional components and state management.
+- **react-native-svg**: SVG rendering library for React Native.
+- **react-native-vector-icons**: Icon library for adding icons.
+- **Animated API**: For creating animated components.
+- **FlatList**: To display a list of recorded laps.
 
-   ```bash
-    npx expo start
-   ```
+## Get Started 
 
-In the output, you'll find options to open the app in a
+### Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Ensure you have Node.js and npm installed on your development machine.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Installation
 
-## Get a fresh project
+1. Clone the repo
+   ```sh
+   git clone https://github.com/yourusername/Prasunet_AD_03.git
 
-When you're ready, run:
+2. Navigate into the project directory
+    ```sh
+     cd Prasunet_AD_03
 
-```bash
-npm run reset-project
-```
+3. Install dependencies
+    ```sh
+    npm install
+    
+## Color Reference
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+| Color            | Hex                                                              |
+| ---------------- | ---------------------------------------------------------------- |
+| Background Color | ![#FFFFFF](https://via.placeholder.com/10/FFFFFF?text=+) #FFFFFF |
+| Primary Color    | ![#4f5ee8](https://via.placeholder.com/10/4f5ee8?text=+) #4f5ee8 |
+| Secondary Color  | ![#dddff4](https://via.placeholder.com/10/dddff4?text=+) #dddff4 |
+| Accent Color     | ![#00b48a](https://via.placeholder.com/10/00b48a?text=+) #00b48a |
 
-## Learn more
+## Acknowledgements
 
-To learn more about developing your project with Expo, look at the following resources:
+- Inspired by various stopwatch applications.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Authors
 
-## Join the community
+- [@Varsani2520](https://www.github.com/Varsani2520)
 
-Join our community of developers creating universal apps.
+## Getting Started
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Usage
+
+- **Start the Stopwatch:**
+  1. Tap the play button to start the stopwatch.
+
+- **Record a Lap:**
+  1. Tap the flag button to record a lap while the stopwatch is running.
+
+- **Stop the Stopwatch**
+  1. Tap the pause button to stop the stopwatch.
+
+- **Reset the Stopwatch**
+  1. Tap the refresh button to reset the stopwatch to zero.
+
+- **View Lap Times:**
+  1. Recorded laps will be displayed below the stopwatch.
+
+## Videos
+
+https://github.com/Varsani2520/Prasunet_AD_03/assets/137641079/b60a5cb9-f571-4c72-9998-af030c6250f8
+
+
+
+  
