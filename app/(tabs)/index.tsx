@@ -9,60 +9,45 @@ const Stopwatch = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [laps, setLaps] = useState([]);
-  const intervalRef = useRef(null);
   const progress = useRef(new Animated.Value(0)).current;
+  const intervalRef = useRef(null);
 
   useEffect(() => {
+    let interval;
     if (isRunning) {
-      Animated.timing(progress, {
-        toValue: 1,
-        duration: 60000, // 1 minute duration for the progress bar to fill
-        useNativeDriver: false,
-      }).start();
-    } else {
-      progress.stopAnimation();
+      interval = setInterval(() => {
+        setElapsedTime(prevTime => prevTime + 1000);
+      }, 1);
+    } else if (!isRunning && elapsedTime !== 0) {
+      clearInterval(interval);
     }
-    return () => progress.stopAnimation();
-  }, [isRunning]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, elapsedTime]);
 
   const startStopwatch = () => {
-    if (isRunning) {
-      clearInterval(intervalRef.current);
-    } else {
-      const startTime = Date.now() - elapsedTime;
-      intervalRef.current = setInterval(() => {
-        setElapsedTime(Date.now() - startTime);
-      }, 10); // update every 10 milliseconds
-    }
     setIsRunning(!isRunning);
   };
 
   const resetStopwatch = () => {
-    clearInterval(intervalRef.current);
-    setElapsedTime(0);
     setIsRunning(false);
-    Animated.timing(progress, {
-      toValue: 0,
-      duration: 0,
-      useNativeDriver: false,
-    }).start();
+    setElapsedTime(0);
     setLaps([]);
   };
 
   const addLap = () => {
-    setLaps((prevLaps) => [elapsedTime, ...prevLaps]);
+    setLaps(prevLaps => [elapsedTime, ...prevLaps]);
   };
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
-    const milliseconds = Math.floor((time % 1000) / 10);
+  const formatTime = (time:number) => {
+    const minutes = Math.floor(time / (1000 * 60));
+    const seconds = Math.floor((time % (1000 * 60)) / 1000);
+    const milliseconds = `00${time % 1000}`.slice(-3);
+    const formattedMinutes = `0${minutes % 60}`.slice(-2);
+    const formattedSeconds = `0${seconds % 60}`.slice(-2);
 
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-    const formattedSeconds = seconds.toString().padStart(2, '0');
-    const formattedMilliseconds = milliseconds.toString().padStart(2, '0');
-
-    return `${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`;
+    return `${formattedMinutes}:${formattedSeconds}:${milliseconds}`;
   };
 
   const circumference = 2 * Math.PI * 90;
@@ -97,14 +82,21 @@ const Stopwatch = () => {
         </Svg>
         <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
       </View>
+      <FlatList
+        style={styles.lapsContainer}
+        data={laps}
+        renderItem={({ item, index }) => (
+          <View style={styles.lapItem}>
+            <Text style={styles.lapIndex}>{`Lap ${index + 1}`}</Text>
+            <Text style={styles.lapDuration}>{formatTime(item)}</Text>
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
       <View style={styles.buttonsContainer}>
-       
-       
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#dddff4' }]} onPress={addLap}>
-        <Icon name="flag" size={30} color="#4f5ee8" />
-
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#dddff4' }]} onPress={addLap}>
+          <Icon name="flag" size={30} color="#4f5ee8" />
         </TouchableOpacity>
-       
         <TouchableOpacity style={[styles.button, { backgroundColor: isRunning ? '#dddff4' : '#dddff4' }]} onPress={startStopwatch}>
           <Icon name={isRunning ? 'pause' : 'play'} size={30} color="#4f5ee8" />
         </TouchableOpacity>
@@ -112,13 +104,6 @@ const Stopwatch = () => {
           <Icon name="refresh" size={30} color="#4f5ee8" />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={laps}
-        renderItem={({ item, index }) => (
-          <Text key={index} style={styles.lapText}>{`Lap ${index + 1}: ${formatTime(item)}`}</Text>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
     </View>
   );
 };
@@ -126,9 +111,11 @@ const Stopwatch = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
+    paddingTop: 50,
+    paddingBottom: 20,
   },
   timerContainer: {
     justifyContent: 'center',
@@ -140,26 +127,46 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
+  lapsContainer: {
+    flex: 1,
+    width: '100%',
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    marginHorizontal: 10,
-    borderRadius: 25, // make the button rounded
-  },
-  buttonText: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: 'bold',
+
   },
   lapText: {
     fontSize: 18,
     color: '#000',
     marginTop: 10,
+  },
+  lapItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#dddff4',
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom:2,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 10,
+    borderRadius: 25,
+  },
+  lapIndex: {
+    fontSize: 18,
+    color: '#4f5ee8',
+  },
+  lapDuration: {
+    fontSize: 18,
+    color: '#4f5ee8',
   },
 });
 
